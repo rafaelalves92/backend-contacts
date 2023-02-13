@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { IContactRequest, IContactUpdateRequest } from '../interfaces/contact.interface'
-import { instanceToInstance } from 'class-transformer'
+import { instanceToPlain } from 'class-transformer'
 import { AppError } from '../errors/appError'
 import createContactService from '../services/contacts/createContact.service'
 import listContactsUserService from '../services/contacts/listContacts.service'
@@ -13,7 +13,7 @@ export const createContactController = async (req: Request, res: Response) => {
         const id: number = +req.user.id
         const createdContact = await createContactService(contact, id)
 
-        return res.status(201).json(instanceToInstance(createdContact))
+        return res.status(201).json(instanceToPlain(createdContact))
     } catch (error) {
         if (error instanceof AppError) {
             return res.status(error.statusCode).json({
@@ -28,7 +28,7 @@ export const listContactsUserController = async (req: Request, res: Response) =>
         const id: number = +req.user.id
         const contacts = await listContactsUserService(id)
 
-        return res.json(contacts)
+        return res.json(instanceToPlain(contacts))
     } catch (error) {
         if (error instanceof AppError) {
             return res.status(error.statusCode).json({
